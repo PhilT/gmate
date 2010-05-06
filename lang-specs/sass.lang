@@ -14,25 +14,25 @@
     <style id="id-tag"                  _name="Id Tag"                  map-to="def:identifier"/>
     <style id="error"                   _name="Error"                   map-to="def:error"/>
     <style id="keyword"                 _name="Keyword"                 map-to="def:keyword"/>
-    <style id="function"                _name="Function"                map-to="def:function"/>    
+    <style id="function"                _name="Function"                map-to="def:function"/>
     <style id="known-property-values"   _name="Known Property Value"    map-to="def:type"/>
     <style id="decimal"                 _name="Decimal"                 map-to="def:decimal"/>
     <style id="dimension"               _name="Dimension"               map-to="def:floating-point"/>
     <style id="color"                   _name="Color"                   map-to="def:base-n-integer"/>
   </styles>
-  
+
   <definitions>
     <context id="comment" style-ref="comment">
       <match>^(  )*\/.*$</match>
     </context>
-    
+
     <context id="identation-error">
       <match>^( (  )*)[^\s].*$</match>
       <include>
         <context sub-pattern="1" style-ref="error"/>
       </include>
     </context>
-  
+
     <context id="selector-pseudo-elements" style-ref="function">
       <keyword>first-line</keyword>
       <keyword>first-letter</keyword>
@@ -49,9 +49,9 @@
       <keyword>focus</keyword>
       <keyword>lang</keyword>
     </context>
-  
+
     <context id="property-names" style-ref="keyword">
-      <prefix>^(  )+:</prefix>
+      <suffix> ?[:=]</suffix>
       <keyword>azimuth</keyword>
       <keyword>background-attachment</keyword>
       <keyword>background-color</keyword>
@@ -125,11 +125,14 @@
       <keyword>min-height</keyword>
       <keyword>min-width</keyword>
       <keyword>orphans</keyword>
+      <keyword>opacity</keyword>
       <keyword>outline-color</keyword>
       <keyword>outline-style</keyword>
       <keyword>outline-width</keyword>
       <keyword>outline</keyword>
       <keyword>overflow</keyword>
+      <keyword>overflow-x</keyword>
+      <keyword>overflow-y</keyword>
       <keyword>padding-bottom</keyword>
       <keyword>padding-left</keyword>
       <keyword>padding-right</keyword>
@@ -413,7 +416,7 @@
       <keyword>ul</keyword>
       <keyword>li</keyword>
     </context>
-    
+
     <context id="dimension" style-ref="dimension">
       <match>[\+-]?([0-9]+|[0-9]*\.[0-9]+)(%|e(m|x)|p(x|t|c)|in|ft|(m|c)m|k?Hz|deg|g?rad|m?s)</match>
     </context>
@@ -421,7 +424,7 @@
     <context id="hexadecimal-color" style-ref="color">
       <match>#([a-fA-F0-9]{6}|[a-fA-F0-9]{3})</match>
     </context>
-        
+
     <context id="function" style-ref="function">
       <start>[a-zA-Z][a-z0-9-]+\(</start>
       <end>\)</end>
@@ -438,11 +441,11 @@
     <context id="importance-modifier" style-ref="keyword">
       <match>\![ \t]*important</match>
     </context>
-    
+
     <context id="sass">
       <include>
-        <context ref="comment"/> 
-        <context ref="identation-error"/> 
+        <context ref="comment"/>
+        <context ref="identation-error"/>
         <context ref="def:string"/>
         <context ref="def:single-quoted-string"/>
         <context ref="selector-pseudo-elements"/>
@@ -456,7 +459,7 @@
         <context ref="number"/>
         <context ref="importance-modifier"/>
       </include>
-    </context>        
-  </definitions>    
+    </context>
+  </definitions>
 </language>
 
