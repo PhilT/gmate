@@ -22,7 +22,7 @@ rails-related files.
 2. Install pyinotify for Gedit Open Files and SnapOpen plugins.
 3. Download gmate sources or clone git repository:
 
-     $ git clone git://github.com/lexrupy/gmate.git
+     $ git clone git://github.com/gmate/gmate.git
      $ cd gmate
 
 4. And run install script:
@@ -55,11 +55,11 @@ rails-related files.
   GeditOpenFiles also based in Textmate Go to file.
 * Multi Edit – Check it out at author's page http://jon-walsh.com/journal/multi-edit
 * Pastie - Paste a selection of code or a source file to pastie.org directly from editor http://github.com/ivyl/gedit-pastie
-* Zen Coding – Zen HTML http://www.kryogenix.org/days/2009/09/21/zen-coding-for-gedit
+* Zen Coding – Tools for faster HTML/CSS coding http://github.com/mikecrittenden/zen-coding-gedit 
 
 <b>Note:</b> In order to use Go to File feature you need to choose just one of:
 GeditGoToFile, SnapOpen or GeditOpenFiles. Multi Edit plugin is not enabled by
-default Gmate instalation.
+default Gmate installation.
 
 
 === Themes/Styles
@@ -202,7 +202,7 @@ edit your <tt>/etc/mime.types</tt> file and add following lines next to other
 More info : http://blog.siverti.com.br/gmate
 
 If you have issues with one of the plugins included in Gmate or have suggestions
-please fill an issue in http://github.com/lexrupy/gmate/issues
+please fill an issue in http://github.com/gmate/gmate/issues
 
 
 Refer to each plugin source code and readme file to get information about
