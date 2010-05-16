@@ -4,6 +4,7 @@
 
 # Register rails-related mime types
 sudo cp mime/rails.xml /usr/share/mime/packages
+sudo cp mime/cfml.xml /usr/share/mime/packages
 # Copy language definitions
 sudo cp lang-specs/*.lang /usr/share/gtksourceview-2.0/language-specs/
 # Copy Gmate executable
