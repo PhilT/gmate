@@ -1,6 +1,6 @@
 import gtk
 import os
-from Logger import log
+from logger import log
 import gedit
 import urllib
 
@@ -17,13 +17,11 @@ menu_str="""
 """
 
 
-class GeditOpenFileGui(object):
+class GeditOpenFilesUi(object):
 
-    def __init__(self, plugin, window, file_monitor, config):
-        self._plugin = plugin
+    def __init__(self, window):
         self._window = window
-        self._file_monitor = file_monitor
-        self._config = config
+        self.searcher = window.searcher
 
         # Get Builder and get xml file
         self._builder = gtk.Builder()
@@ -67,11 +65,11 @@ class GeditOpenFileGui(object):
         self._file_list.append_column(column1)
         self._file_list.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
 
-        # Add Animation icon for building data
-        building_data_spinner = self._builder.get_object('spinner')
-        building_data_spinner.set_from_animation(gtk.gdk.PixbufAnimation(
-            os.path.join(os.path.dirname(__file__), "gui", "progress.gif")))
-        self._building_data_spinner_box = self._builder.get_object('spinner_box')
+#        # Add Animation icon for building data
+#        building_data_spinner = self._builder.get_object('spinner')
+#        building_data_spinner.set_from_animation(gtk.gdk.PixbufAnimation(
+#            os.path.join(os.path.dirname(__file__), "gui", "progress.gif")))
+#        self._building_data_spinner_box = self._builder.get_object('spinner_box')
 
         # Setup Configuration Tab
         self._notebook = self._builder.get_object("notebook")
@@ -81,7 +79,7 @@ class GeditOpenFileGui(object):
 
         # Setup Callback for root path
         self._open_root_path = self._builder.get_object("open_root_path")
-        self._open_root_path.set_current_folder(self._config.get_value("ROOT_PATH"))
+        self._open_root_path.set_current_folder(self.searcher.configuration.get_value("STATIC_ROOT_PATH"))
 
         self._config_ignore_input = self._builder.get_object("config_ignore_input")
 
@@ -92,8 +90,8 @@ class GeditOpenFileGui(object):
         self._builder.get_object("config_cancel_button").connect("clicked", self._cancel_config_event)
         self._builder.get_object("config_refresh_button").connect("clicked", self._refresh_data)
 
-        use_file_browser = self._config.get_value("USE_FILEBROWSER")
-        if use_file_browser == True or use_file_browser is None: # Defualt
+        use_file_browser = self.searcher.configuration.get_value("USE_FILEBROWSER")
+        if use_file_browser == True or use_file_browser == None: # Defualt
             self._open_root_hbox.set_sensitive(False)
         else:
             self._open_root_hbox.set_sensitive(True)
@@ -103,32 +101,34 @@ class GeditOpenFileGui(object):
         self._insert_menu()
 
     def _refresh_data(self, event):
-        self._file_monitor.refresh_database()
+        if self.searcher.configuration.get_value("USE_FILEBROWSER"):
+            self.searcher.root_changed(root=self.searcher.filebrowser_current_root)
+        else:
+            self.searcher.root_changed(root=self.searcher.configuration.get_value('STATIC_ROOT_PATH'))
         self._plugin_window.hide()
 
     def _reset_config(self):
-        if self._config.get_value("USE_FILEBROWSER"):
+        if self.searcher.configuration.get_value("USE_FILEBROWSER"):
             self._file_browser_checkbox.set_active(True)
         else:
             self._file_browser_checkbox.set_active(False)
-        log.debug("[GeditOpenFileGui] IGNORE_FILE_FILETYPES = " + str(self._config.get_value("IGNORE_FILE_FILETYPES")))
-        self._config_ignore_input.set_text(", ".join(self._config.get_value("IGNORE_FILE_FILETYPES")))
+        log.debug("[GeditOpenFileGui] EXCLUDE_LIST = " + str(self.searcher.configuration.get_value("")))
+        self._config_ignore_input.set_text(", ".join(self.searcher.configuration.get_value("EXCLUDE_LIST")))
 
     def _cancel_config_event(self, event):
         self._reset_config()
         self._plugin_window.hide()
 
     def _save_config_event(self, event):
-        self._config.set_value("USE_FILEBROWSER", self._file_browser_checkbox.get_active())
-        log.debug("[GeditOpenFileGui] : ROOT_PATH = %s" % self._open_root_path.get_current_folder())
-        self._config.set_value("ROOT_PATH", self._open_root_path.get_current_folder())
+        self.searcher.configuration.set_value("USE_FILEBROWSER", self._file_browser_checkbox.get_active())
+        log.debug("[GeditOpenFileGui] : STATIC_ROOT_PATH = %s" % self._open_root_path.get_current_folder())
+        self.searcher.configuration.set_value("STATIC_ROOT_PATH", self._open_root_path.get_current_folder())
 
         ignored_list = [s.strip() for s in self._config_ignore_input.get_text().split(",")]
         log.debug("[GeditOpenFileGui] ignored_list = " + str(ignored_list))
-        self._config.set_value("IGNORE_FILE_FILETYPES", ignored_list)
-        self._file_monitor.set_root_path(self._config.root_path())
-        self._file_monitor.refresh_database()
-        self._plugin_window.hide()
+        self.searcher.configuration.set_value("EXCLUDE_LIST", ignored_list)
+        self.searcher.build_exclude_list()
+        self._refresh_data(event)
 
     def _file_browser_checkbox_event(self, widget):
         if widget.get_active():
@@ -143,10 +143,6 @@ class GeditOpenFileGui(object):
         """
         self._plugin_window.hide()
         return True
-
-    def update_ui(self):
-        #log.error("[GeditOpenFileGui] update_ui METHOD NOT IMPLEMENTED")
-        pass
 
     def _insert_menu(self):
         #TODO refactor and reivew code. To make sure its not doing more work then is needed.
@@ -187,7 +183,7 @@ class GeditOpenFileGui(object):
 
         if input_query:
             # Query database based on input
-            results = self._file_monitor.search_for_files(input_query)
+            results = self.searcher.search(input_query)
             self._insert_into_treeview(results)
 
             # Select the first one on the list
@@ -208,6 +204,7 @@ class GeditOpenFileGui(object):
         tab = self._window.get_tab_from_uri(uri)
         if not tab:
             # if not createa tab.
+            self.searcher.increment_uri_open_count(uri)
             tab = self._window.create_tab_from_uri(uri, self._encoding, 0,
                 False, False)
         self._window.set_active_tab(tab)
@@ -237,8 +234,8 @@ class GeditOpenFileGui(object):
         self._plugin_window.show()
         self._notebook.set_current_page(0) # Set back to the search page
         self._file_query.grab_focus()
-        self._file_monitor.change_root(self._config.root_path())
-        self._reset_config()
+#        self._file_monitor.change_root(self.searcher.configuration.root_path())
+#        self._reset_config()
 
     def _open_selected_item(self, event):
         self._on_select_from_list(None, event)
