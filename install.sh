@@ -55,7 +55,7 @@ fi
 
 `sudo sh ./debian/postinst`
 
-if [ "$1" != "-y" ]
+if [ "$1" = "" ]
 then
     echo -n "Do you want to activate default plugin and configuration set? [y,N]:"
     read answer
