@@ -2,58 +2,108 @@
 # Kill all runing instances if exists
 # killall gedit
 
-# Register rails-related mime types
-sudo cp mime/rails.xml /usr/share/mime/packages
-sudo cp mime/cfml.xml /usr/share/mime/packages
-# Copy language definitions
-sudo cp lang-specs/*.lang /usr/share/gtksourceview-2.0/language-specs/
-# Copy Gmate executable
-sudo mkdir -p /usr/share/gedit-2/gmate
-sudo cp gmate.py /usr/share/gedit-2/gmate/gmate.py
-# Copy Tags
-if [ ! -d /usr/share/gedit-2/plugins/taglist/ ]
-then
-  sudo mkdir -p /usr/share/gedit-2/plugins/taglist/
-fi
-sudo cp tags/*.tags.gz /usr/share/gedit-2/plugins/taglist/
+# Try to use sudo
+echo "Type root password if you want to install system wide. Press [Enter] to install to this user only."
+sudo -v
 
-# Update mime type database
-sudo update-mime-database /usr/share/mime
+if [ $(id -u) = "0" ]; then
+  sudo="yes"
+else
+  sudo="no"
+fi
 
 # Copy gedit facilities
-if [ ! -d $HOME/.gnome2/gedit ]
-then
-  mkdir -p ~/.gnome2/gedit
+if [ $sudo = "yes" ]; then
+    if [ ! -d $HOME/.gnome2/gedit ]; then
+        mkdir -p ~/.gnome2/gedit
+    fi
 fi
-# Copy Snippets
-if [ ! -d $HOME/.gnome2/gedit/snippets ]
-then
-  mkdir -p ~/.gnome2/gedit/snippets
-fi
-cp snippets/* ~/.gnome2/gedit/snippets/
 
-# Copy Plugins
-if [ ! -d $HOME/.gnome2/gedit/plugins ]
-then
-  mkdir -p ~/.gnome2/gedit/plugins
+# Copy language definitions
+if [ $sudo = "yes" ]; then
+    sudo cp lang-specs/*.lang /usr/share/gtksourceview-2.0/language-specs/
+else
+    mkdir -p ~/.local/share/gtksourceview-2.0/language-specs
+    cp lang-specs/* ~/.local/share/gtksourceview-2.0/language-specs/
 fi
-cp -R plugins/* ~/.gnome2/gedit/plugins
+
+# Register MIME-types
+if [ $sudo = "yes" ]; then
+    sudo cp mime/*.xml /usr/share/mime/packages
+    sudo update-mime-database /usr/share/mime
+else
+    mkdir -p ~/.local/share/mime/packages
+    cp mime/*.xml ~/.local/share/mime/packages
+    update-mime-database ~/.local/share/mime
+fi
+
+# Copy Gmate executable
+if [ $sudo = "yes" ]; then
+    sudo mkdir -p /usr/share/gedit-2/gmate
+    sudo cp gmate.py /usr/share/gedit-2/gmate/gmate.py
+else
+    mkdir -p ~/gmate
+    cp gmate.py ~/gmate
+fi
+
+# Copy Tags
+if [ $sudo = "yes" ]; then
+    sudo mkdir -p /usr/share/gedit-2/plugins/taglist/
+    sudo cp tags/*.tags.gz /usr/share/gedit-2/plugins/taglist/
+else
+    mkdir -p ~/.gnome2/gedit/taglist/
+    cp tags/*.tags.gz ~/.gnome2/gedit/taglist/
+fi
+
+# Copy Snippets
+if [ $sudo = "yes" ]; then
+    sudo cp snippets/* /usr/share/gedit-2/plugins/snippets/
+else
+    if [ ! -d $HOME/.gnome2/gedit/snippets ]; then
+        mkdir -p ~/.gnome2/gedit/snippets
+    fi
+    cp snippets/* ~/.gnome2/gedit/snippets/
+fi
+
+# Copy plugins
+if [ $sudo = "yes" ]; then
+    for plugin in plugins/gedit2/*; do
+        sudo cp -R $plugin/* /usr/lib/gedit-2/plugins/
+    done
+else
+    if [ ! -d $HOME/.gnome2/gedit/plugins ]; then
+        mkdir -p ~/.gnome2/gedit/plugins
+    fi
+    for plugin in plugins/gedit2/*; do
+        cp -R $plugin/* ~/.gnome2/gedit/plugins
+    done
+fi
 
 # Copy Styles
-if [ ! -d $HOME/.gnome2/gedit/styles ]
-then
-  mkdir -p ~/.gnome2/gedit/styles
+if [ $sudo = "yes" ]; then
+    sudo cp styles/* /usr/share/gtksourceview-2.0/styles/
+else
+    if [ ! -d $HOME/.gnome2/gedit/styles ]; then
+        mkdir -p ~/.gnome2/gedit/styles
+    fi
+    cp styles/* ~/.gnome2/gedit/styles
 fi
-cp styles/* ~/.gnome2/gedit/styles
 
 # Ask for Python-Webkit package
 if [ -f /etc/debian_version ]; then
-  sudo apt-get install python-webkit
+  if [ $sudo = "yes" ]; then
+    sudo apt-get install python-webkit
+  else
+    echo "Please install python-webkit (sudo apt-get install python-webkit)"
+  fi
 fi
 
 # Execute debian postins script
-
-`sudo sh ./debian/postinst`
+if [ $sudo = "yes" ]; then
+  `sudo sh ./debian/postinst`
+else
+  `sh ./debian/postinst`
+fi
 
 if [ "$1" = "" ]
 then
@@ -63,21 +113,21 @@ fi
 
 if [ "$1" = "-y" ] || [ "$answer" = "y" ] || [ "$answer" = "Y" ]
 then
-    `gconftool-2 --set /apps/gedit-2/plugins/active-plugins -t list --list-type=str [rails_extract_partial,rubyonrailsloader,align,smart_indent,text_tools,completion,quickhighlightmode,gemini,trailsave,rails_hotkeys,gedit_openfiles,filebrowser,snippets,modelines,smartspaces,docinfo,time,spell,terminal,drawspaces,codecomment,colorpicker,indent,tabswitch]`
-    `gconftool-2 --set /apps/gedit-2/preferences/editor/auto_indent/auto_indent -t bool true`
-    `gconftool-2 --set /apps/gedit-2/preferences/editor/bracket_matching/bracket_matching -t bool true`
-    `gconftool-2 --set /apps/gedit-2/preferences/editor/current_line/highlight_current_line -t bool true`
-    `gconftool-2 --set /apps/gedit-2/preferences/editor/cursor_position/restore_cursor_position -t bool true`
-    `gconftool-2 --set /apps/gedit-2/preferences/editor/line_numbers/display_line_numbers -t bool true`
-    `gconftool-2 --set /apps/gedit-2/preferences/editor/right_margin/display_right_margin -t bool true`
-    `gconftool-2 --set /apps/gedit-2/preferences/editor/right_margin/right_margin_position -t int 80`
-    `gconftool-2 --set /apps/gedit-2/preferences/editor/colors/scheme -t str railscasts`
-    `gconftool-2 --set /apps/gedit-2/preferences/editor/tabs/insert_spaces -t bool true`
-    `gconftool-2 --set /apps/gedit-2/preferences/editor/tabs/tabs_size -t int 2`
-    `gconftool-2 --set /apps/gedit-2/preferences/editor/wrap_mode/wrap_mode -t str GTK_WRAP_NONE`
-    `gconftool-2 --set /apps/gedit-2/preferences/editor/save/create_backup_copy -t bool false`
-    echo "Configuration set."
+  gconftool-2 --set /apps/gedit-2/plugins/active-plugins -t list --list-type=str [rails_extract_partial,rubyonrailsloader,align-columns,smart_indent,text_tools,completion,quickhighlightmode,gemini,trailsave,rails_hotkeys,fuzzyopen,filebrowser,snippets,modelines,smartspaces,docinfo,time,spell,terminal,drawspaces,codecomment,colorpicker,indent,encodingpy,FindInProject]
+  gconftool-2 --set /apps/gedit-2/preferences/editor/auto_indent/auto_indent -t bool true
+  gconftool-2 --set /apps/gedit-2/preferences/editor/bracket_matching/bracket_matching -t bool true
+  gconftool-2 --set /apps/gedit-2/preferences/editor/current_line/highlight_current_line -t bool true
+  gconftool-2 --set /apps/gedit-2/preferences/editor/cursor_position/restore_cursor_position -t bool true
+  gconftool-2 --set /apps/gedit-2/preferences/editor/line_numbers/display_line_numbers -t bool true
+  gconftool-2 --set /apps/gedit-2/preferences/editor/right_margin/display_right_margin -t bool true
+  gconftool-2 --set /apps/gedit-2/preferences/editor/right_margin/right_margin_position -t int 80
+  gconftool-2 --set /apps/gedit-2/preferences/editor/colors/scheme -t str twilight
+  gconftool-2 --set /apps/gedit-2/preferences/editor/tabs/insert_spaces -t bool true
+  gconftool-2 --set /apps/gedit-2/preferences/editor/tabs/tabs_size -t int 4
+  gconftool-2 --set /apps/gedit-2/preferences/editor/wrap_mode/wrap_mode -t str GTK_WRAP_NONE
+  gconftool-2 --set /apps/gedit-2/preferences/editor/save/create_backup_copy -t bool false
+  echo "Configuration set."
 else
-    echo "No config performed."
+  echo "No config performed."
 fi
 

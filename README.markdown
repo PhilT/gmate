@@ -14,7 +14,9 @@ please fill an issue in <http://github.com/gmate/gmate/issues>
 1. Add Ubuntu on Rails PPA:
 
         sudo apt-add-repository ppa:ubuntu-on-rails/ppa
+        sudo apt-get update
 
+   *Note:* on Karmic use `add-apt-repository` instead of `apt-add-repository`.
 2. Install gedit-gmate package:
 
         sudo apt-get install gedit-gmate
@@ -22,10 +24,11 @@ please fill an issue in <http://github.com/gmate/gmate/issues>
 ### Other Linux
 
 1. Install all dependencies:
-    * `python-webkitgtk` for Todo-List plugin, see
+    * `python-webkitgtk` for Todo-List plugin and Find in Project plugin, see
       <http://code.google.com/p/pywebkitgtk>
     * `python-sexy` for Go to File plugin
     * `pyinotify` for Gedit Open Files and SnapOpen plugins.
+    * `ack-grep` for faster search in Find in Project. (optional)
 2. Download gmate sources or clone git repository:
 
         git clone git://github.com/gmate/gmate.git
@@ -41,34 +44,46 @@ please fill an issue in <http://github.com/gmate/gmate/issues>
 
 ### Plugins
 
-* **Advanced Bookmarks**. Highlight, remenber and toggle bookmarks in your files.
+* **Advanced Bookmarks**. Highlight, remenber and toggle bookmarks in your
+  files.
+* **Align columns**. Align text blocks into columns separated by pipe ( | )
 * **Classbrowser**. A Classbrowser (depends of ctags, I use exuberant-ctags).
-* **Find in Files**. Find a string in files (integrated with filebrowser).
+* **Encoding**. Reopen the document in a different encoding
+* **File Search**. This is a search plugin for Gedit to search for a text inside
+  a directory. <https://github.com/oliver/gedit-file-search>
+* **Find in Project**. Search in the project with ack/grep.
+  <http://github.com/eggegg/find-in-project>
+* **Fuzzy Open**. Quick way to open file in project.
+  <http://github.com/eggegg/fuzzyopen>
 * **Gedit Open File**. Regex based file open (like textmate Go to file…).
 * **Gedit Todo**. Find Todo Marks in source files (integrated with filebrowser).
 * **Gemini**. Pair complete for quotes and braces.
+* **Indent Converter**. Converts tabs to spaces and spaces to tabs.
+* **Multi Edit**. Check it out at author's page
+  <http://jon-walsh.com/journal/multi-edit>
+* **Pastie**. Paste a selection of code or a source file to pastie.org directly
+  from editor <http://github.com/ivyl/gedit-pastie>
 * **Quickhighligthmode**. Fast change current highlight mode.
 * **Rails Extract Partial**. Extract selected region of rhtml as a partial.
 * **Rails Hotcommands**. Execute Rails Commands (such rake tasks).
 * **Rails Hotkeys**. Navigation in Rails Project Files.
 * **Regex Search Replace**. Search and replace with regular expressions.
+* **Reopen Tabs**. Saves opened tabs on exit to restore them on next run.
+* **Simple Folding**. Collapse selected text.
 * **Smart Indent**. Smart Indentation regex based.
 * **Tabulation**. Auto set tabs and spaces based on file type.
+* **TextMate Style Autocompletion**. Better autocompletion. Tap `Esc` to cycle
+  through the available completions.
 * **Text Tools**. Some text manipulation improvements (adapted from line tools).
 * **Trailsave**. Remove trailing spaces before save a document.
 * **Word Completion**. Word completion plugin.
-* **Gedit Go To File**. Yet Another Go to File plugin Just Like SnapOpen and
-  GeditOpenFiles also based in Textmate Go to file.
-* **Multi Edit**. Check it out at author's page
-  <http://jon-walsh.com/journal/multi-edit>
-* **Pastie**. Paste a selection of code or a source file to pastie.org directly
-  from editor <http://github.com/ivyl/gedit-pastie>
 * **Zen Coding**. Tools for faster HTML/CSS coding
   <http://github.com/mikecrittenden/zen-coding-gedit>
+* **Zoom**. Adds the ability to change the text size.
+  <http://github.com/algorich/gedit-zoom>
 
-**Note:** In order to use Go to File feature you need to choose just one of:
-GeditGoToFile, SnapOpen or GeditOpenFiles. Multi Edit plugin is not enabled by
-default GMate installation.
+**Note:** Multi Edit plugin is not enabled by default GMate installation.
+
 
 Refer to each plugin source code and readme file to get information about
 specific plugin licencing and copyright.
@@ -76,6 +91,7 @@ specific plugin licencing and copyright.
 ### Language Improvements and Mime Types
 
 * Basic YAML Syntax Highlight
+* CoffeeScript Syntax Highlight
 * ColdFusion Syntax Highlight
 * Cucumber Syntax Highlight
 * Groovy and gsp Support (Included bundle created by Aaron Eischeid)
@@ -169,6 +185,7 @@ specific plugin licencing and copyright.
 * SpaceCadet Pro (Converted from Textmate)
 * Spetacular (Converted from Textmate)
 * Stoneship (Converted from Textmate)
+* Solarized
 * Sunburst (Converted from Textmate)
 * Swyphs II (Converted from Textmate)
 * Tango (Converted from Textmate)
@@ -187,3 +204,4 @@ specific plugin licencing and copyright.
 * Wombat
 * Zenburn
 * Zenburnesque (Converted from Textmate)
+

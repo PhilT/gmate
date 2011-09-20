@@ -2,10 +2,11 @@
 <!--
  Author: Ivan Kerin <kerin@rizn.info>
 -->
-<language id="haml" _name="HAML" version="2.0" _section="Markup">
+<language id="haml" _name="Haml" version="2.0" _section="Markup">
   <metadata>
     <property name="mimetypes">text/x-haml</property>
     <property name="globs">*.haml</property>
+    <property name="line-comment-start">//</property>
   </metadata>
   <styles>
     <style id="comment"   _name="Comment"   map-to="def:comment"/>
@@ -33,7 +34,7 @@
       
       <include>
       
-        <context id="erb-block" end-parent="true">
+        <context id="erb-block" end-parent="true" class="no-spell-check">
           <start>=|-|~</start>
           <end>$</end>
           <include>
@@ -41,15 +42,15 @@
           </include>
         </context>
         
-        <context id="tag" style-ref="tag" once-only="true">
+        <context id="tag" style-ref="tag" once-only="true" class="no-spell-check">
           <match>%[a-zA-Z0-9\-\_]+</match>
         </context>
         
-        <context id="id-tag" style-ref="id-tag">
+        <context id="id-tag" style-ref="id-tag" class="no-spell-check">
           <match>#[a-zA-Z0-9\-\_]+</match>
         </context>
         
-        <context id="class-tag" style-ref="class-tag">
+        <context id="class-tag" style-ref="class-tag" class="no-spell-check">
           <match>\.[a-zA-Z0-9\-\_]+</match>
         </context>
         
@@ -57,7 +58,7 @@
           <match>\}(?!{)</match>
         </context>
         
-        <context id="erb-hash">
+        <context id="erb-hash" class="no-spell-check">
           <start>{</start>
           <end>}</end>
           <include>
